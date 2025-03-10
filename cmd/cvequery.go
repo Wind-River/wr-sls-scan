@@ -35,6 +35,13 @@ var CVEQueryCmd = &cobra.Command{
 }
 
 func init() {
+	CVEQueryCmd.Flags().StringArrayVarP(&Severity, "severity", "v", []string{}, "CVE severity: [Critical,High,Medium,Low,None]")
+	CVEQueryCmd.Flags().StringArrayVarP(&Status, "status", "u", []string{}, "CVE Status: [Allowlisted,Ignored,Needs Review,Resolved,Unaffected,Vulnerable,Won't fix]")
+	CVEQueryCmd.Flags().StringVarP(&ModifiedDateEnd, "modifiedDateEnd", "D", "", "CVE modified time period query condition that end date. Format: yyyy-MM-dd")
+	CVEQueryCmd.Flags().StringVarP(&ModifiedDateBegin, "modifiedDateBegin", "M", "", "CVE modified time period query condition that beginning date. Format: yyyy-MM-dd")
+	CVEQueryCmd.Flags().StringArrayVarP(&scoreComparator, "scoreComparator", "s", []string{}, "CVSS score comparison condition, can be specify mutiple values. Format: \"Comparator Score\". Supported Comparator: NUMERIC_EQUAL, NUMERIC_GREATER_THAN, NUMERIC_LESS_THAN, NUMERIC_NOT_EQUAL, NUMERIC_GREATER_THAN_OR_EQUAL, NUMERIC_LESSER_THAN_OR_EQUAL. Example: --scoreComparator \"NUMERIC_LESS_THAN 8.0\" --scoreComparator \"NUMERIC_GREATER_THAN_OR_EQUAL 7.0\"")
+	CVEQueryCmd.Flags().StringVarP(&PublishedDateEnd, "publishedDateEnd", "E", "", "CVE published time period query condition that end date. Format: yyyy-MM-dd")
+	CVEQueryCmd.Flags().StringVarP(&PublishedDateBegin, "publishedDateBegin", "B", "", "CVE published time period query condition that beginning date. Format: yyyy-MM-dd")
 	CVEQueryCmd.Flags().StringVarP(&FuzzyQuery, "fuzzyQuery", "z", "", "Fuzzy query conditions, including CVE, Package and Package Group")
 	CVEQueryCmd.Flags().Uint64VarP(&ProjectID, "projectId", "p", 0, "Project ID")
 

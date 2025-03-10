@@ -117,8 +117,15 @@ var (
 	packageIdFlag   = pflag.Uint64P("packageId", "m", 0, "Package ID")
 	outFileNameFlag = pflag.StringP("outFile", "o", "", "Out File Name")
 
-	cveIdFlag      = pflag.StringP("cveId", "c", "", "CVE ID")
-	fuzzyQueryFlag = pflag.StringP("fuzzyQuery", "z", "", "Fuzzy Query")
+	cveIdFlag              = pflag.StringP("cveId", "c", "", "CVE ID")
+	fuzzyQueryFlag         = pflag.StringP("fuzzyQuery", "z", "", "Fuzzy Query")
+	publishedDateBeginFlag = pflag.StringP("publishedDateBegin", "B", "", "Published Date Begin")
+	publishedDateEndFlag   = pflag.StringP("publishedDateEnd", "E", "", "Published Date End")
+	scoreComparatorFlag    = pflag.StringArrayP("scoreComparator", "s", []string{}, "Comparato for CVSS score")
+	modifiedDateBegin      = pflag.StringP("modifiedDateBegin", "M", "", "Modified Date Begin")
+	modifiedDateEnd        = pflag.StringP("modifiedDateEnd", "D", "", "Modified Date End")
+	status                 = pflag.StringArrayP("status", "u", []string{}, "Cve Status")
+	severity               = pflag.StringArrayP("severity", "v", []string{}, "Cve Severity")
 
 	groupIdFlag   = pflag.Int64P("groupId", "g", -1, "Group ID")
 	userTokenFlag = pflag.StringP("userToken", "t", "", "User Token")
@@ -175,6 +182,13 @@ func init() {
 	pflag.CommandLine.MarkHidden("cveId")
 	pflag.CommandLine.MarkHidden("description")
 
+	pflag.CommandLine.MarkHidden("status")
+	pflag.CommandLine.MarkHidden("severity")
+	pflag.CommandLine.MarkHidden("modifiedDateBegin")
+	pflag.CommandLine.MarkHidden("modifiedDateEnd")
+	pflag.CommandLine.MarkHidden("scoreComparator")
+	pflag.CommandLine.MarkHidden("publishedDateEnd")
+	pflag.CommandLine.MarkHidden("publishedDateBegin")
 	pflag.CommandLine.MarkHidden("fuzzyQuery")
 	pflag.CommandLine.MarkHidden("outFile")
 	pflag.CommandLine.MarkHidden("packageId")
@@ -241,7 +255,7 @@ func wordSepNormalizeFunc(f *pflag.FlagSet, name string) pflag.NormalizedName {
 func getServerUrl() string {
 	return "https://studio.windriver.com/scan/api"
 	//return "http://thor.mls.wrs.com/jxu6/api"
-	//return "http://localhost:8088/api"
+	//return "http://localhost:4200/api"
 }
 
 func initConfig() {

@@ -10,7 +10,7 @@
 The `sls-scan` is the command line interface of the Wind River Studio Security Scanner system.
 
 * Version: 1.0
-* Author: Jiayi Xu <jiayi.xu@windriver.com>
+* Author: Zhiming Wang <zhiming.wang@windriver.com>
 * Copyright © 2024 Wind River Systems, Inc.
 
 
@@ -29,7 +29,7 @@ The `sls-scan` is the command line interface of the Wind River Studio Security S
 ## Quik Start
 
 ```sh
-$ git clone --depth 1 https://github.com/windriver/sls-scan.git
+$ git clone --depth 1 https://github.com/Wind-River/wr-sls-scan.git
 $ cd sls-scan
 $ go build
 $ sls-scan help

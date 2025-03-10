@@ -32,9 +32,16 @@ import (
 )
 
 var (
-	FuzzyQuery  string
-	CVEFilePath string
-	CVEID       string
+	scoreComparator    []string
+	PublishedDateEnd   string
+	PublishedDateBegin string
+	FuzzyQuery         string
+	CVEFilePath        string
+	CVEID              string
+	Status             []string
+	Severity           []string
+	ModifiedDateBegin  string
+	ModifiedDateEnd    string
 )
 
 // cveCmd represents the cve command
@@ -99,8 +106,28 @@ func queryCVE(projectId uint64) {
 	}
 
 	var queryBean CVEQueryBean
+	var cvssScore []ScoreComparator
+	// the scoreComparator flag is of type []string, which is passed by multi-value command line
+	// flag --scoreComparator, each flag value format: "Comparator Score", Comparator is string
+	// type of supported value, Score is float64 type of cvss score.
+	for _, scorecomparator := range scoreComparator {
+		comparator := strings.Split(scorecomparator, " ")[0]
+		score, err := strconv.ParseFloat(strings.Split(scorecomparator, " ")[1], 64)
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
+		cvssScore = append(cvssScore, ScoreComparator{Comparator: comparator, Score: score})
+	}
 	queryBean.ProjectId = projectId
 	queryBean.FuzzyQuery = FuzzyQuery
+	queryBean.Status = Status
+	queryBean.Severity = Severity
+	queryBean.CvssScore = cvssScore
+	queryBean.PublishedDateBegin = PublishedDateBegin
+	queryBean.PublishedDateEnd = PublishedDateEnd
+	queryBean.ModifiedDateBegin = ModifiedDateBegin
+	queryBean.ModifiedDateEnd = ModifiedDateEnd
 	//queryBean.Severity = *severityFlag
 	jsonData, err := json.Marshal(queryBean)
 	if err != nil {
@@ -173,8 +200,29 @@ func exportCVE(projectId uint64) {
 	}
 
 	var queryBean CVEQueryBean
+	var cvssScore []ScoreComparator
+	// the scoreComparator flag is of type []string, which is passed by multi-value command line
+	// flag --scoreComparator, each flag value format: "Comparator Score", Comparator is string
+	// type of supported value, Score is float64 type of cvss score.
+	for _, scorecomparator := range scoreComparator {
+		comparator := strings.Split(scorecomparator, " ")[0]
+		score, err := strconv.ParseFloat(strings.Split(scorecomparator, " ")[1], 64)
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
+		cvssScore = append(cvssScore, ScoreComparator{Comparator: comparator, Score: score})
+	}
 	queryBean.ProjectId = projectId
 	queryBean.FuzzyQuery = FuzzyQuery
+	queryBean.Status = Status
+	queryBean.Severity = Severity
+	queryBean.CvssScore = cvssScore
+	queryBean.PublishedDateBegin = PublishedDateBegin
+	queryBean.PublishedDateEnd = PublishedDateEnd
+	queryBean.ModifiedDateBegin = ModifiedDateBegin
+	queryBean.ModifiedDateEnd = ModifiedDateEnd
+
 	jsonData, err := json.Marshal(queryBean)
 	if err != nil {
 		fmt.Println("Fatal error:", err.Error())
@@ -195,9 +243,12 @@ func exportCVE(projectId uint64) {
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println("Fatal error: HTTP request failed:", err.Error())
+		return
+	}
+	defer resp.Body.Close()
 	if resp.StatusCode == 200 {
-		defer resp.Body.Close()
-
 		outFileName := CVEFilePath
 		if outFileName == "" {
 			outFileName = infoProject.ProjectName + "-CVE-List.xlsx"
@@ -463,20 +514,26 @@ func formatOutCVEs(tableDataInfo CVETableDataInfo) {
 	}
 }
 
+type ScoreComparator struct {
+	Comparator string  `json:"comparator"`
+	Score      float64 `json:"score"`
+}
+
 type CVEQueryBean struct {
-	ProjectId          uint64   `json:"projectId"`
-	ManifestId         uint64   `json:"manifestId"`
-	FuzzyQuery         string   `json:"fuzzyQuery"`
-	Severity           []string `json:"severity"`
-	Score              float32  `json:"score"`
-	Comparator         string   `json:"Comparator"`
-	Status             []string `json:"status"`
-	Packages           []string `json:"packages"`
-	Cveids             []string `json:"cveids"`
-	PackageGroups      []string `json:"packageGroups"`
-	PublishedDateBegin string   `json:"publishedDateBegin"`
-	PublishedDateEnd   string   `json:"publishedDateEnd"`
-	HasSolution        string   `json:"hasSolution"`
+	ProjectId          uint64            `json:"projectId"`
+	ManifestId         uint64            `json:"manifestId"`
+	FuzzyQuery         string            `json:"fuzzyQuery"`
+	Severity           []string          `json:"severity"`
+	CvssScore          []ScoreComparator `json:"cvssScore"`
+	Status             []string          `json:"status"`
+	Packages           []string          `json:"packages"`
+	Cveids             []string          `json:"cveids"`
+	PackageGroups      []string          `json:"packageGroups"`
+	PublishedDateBegin string            `json:"publishedDateBegin"`
+	PublishedDateEnd   string            `json:"publishedDateEnd"`
+	ModifiedDateBegin  string            `json:"modifiedDateBegin"`
+	ModifiedDateEnd    string            `json:"modifiedDateEnd"`
+	HasSolution        string            `json:"hasSolution"`
 }
 
 type CVETableDataInfo struct {
