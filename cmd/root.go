@@ -60,7 +60,8 @@ Wind River Studio Security Scanner is a professional-grade security vulnerabilit
 
 	cveExample = `  {{.appName}} cve detail -p <ProjectID> -c <CVE-ID>                                      view cve detail
   {{.appName}} cve export -p <ProjectID> -z "<FuzzyQuery>"  -o "path/outfilename.xlsx"    export cve information thru. fuzzy query conditions under one project
-  {{.appName}} cve query  -p <ProjectID> -z "<FuzzyQuery>"                                query CVE thru. fuzzy query conditions under one project`
+  {{.appName}} cve query  -p <ProjectID> -z "<FuzzyQuery>"                                query CVE thru. fuzzy query conditions under one project
+  {{.appName}} cve update -p <ProjectID> -c <cveId> -a <newStatus> -N <packageName>       Update the status of CVE.`
 
 	groupExample = `  {{.appName}} group create   -n "Your Group Name" -d "Description"                      create new group
   {{.appName}} group delete   -g <GroupID>                                               delete one group that the current user has administrative privileges on
@@ -126,6 +127,8 @@ var (
 	modifiedDateEnd        = pflag.StringP("modifiedDateEnd", "D", "", "Modified Date End")
 	status                 = pflag.StringArrayP("status", "u", []string{}, "Cve Status")
 	severity               = pflag.StringArrayP("severity", "v", []string{}, "Cve Severity")
+	newStatusFlag          = pflag.StringP("newStatus", "a", "", "New Cve Status")
+	packageNameFlag        = pflag.StringP("packageName", "N", "", "PackageName")
 
 	groupIdFlag   = pflag.Int64P("groupId", "g", -1, "Group ID")
 	userTokenFlag = pflag.StringP("userToken", "t", "", "User Token")
@@ -197,6 +200,8 @@ func init() {
 	pflag.CommandLine.MarkHidden("userToken")
 	pflag.CommandLine.MarkHidden("groupId")
 	pflag.CommandLine.MarkHidden("markdownDocs")
+	pflag.CommandLine.MarkHidden("newStatus")
+	pflag.CommandLine.MarkHidden("packageName")
 	//rootCmd.SetVersionTemplate(customTemplate)
 	//rootCmd.CompletionOptions.DisableDefaultCmd = true
 	// Here you will define your flags and configuration settings.

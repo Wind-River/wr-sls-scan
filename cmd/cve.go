@@ -38,6 +38,8 @@ var (
 	FuzzyQuery         string
 	CVEFilePath        string
 	CVEID              string
+	newStatus          string
+	packageName        string
 	Status             []string
 	Severity           []string
 	ModifiedDateBegin  string
@@ -86,8 +88,82 @@ func executeCVESubCommand(subCommand string) {
 		detailCVE(projectId, cveId)
 	} else if subCommand == "export" {
 		exportCVE(projectId)
+	} else if subCommand == "update" {
+		cveId := CVEID
+		for cveId == "" {
+			fmt.Print("Please enter CVE ID:")
+			fmt.Scanln(&cveId)
+		}
+
+		updateCveStatus(projectId, cveId)
 	} else {
 		fmt.Printf("Unrecognized subcommand: %s", subCommand)
+	}
+}
+
+func updateCveStatus(projectId uint64, cveId string) {
+	cookieStr, tokenError := checkUserToken()
+	if tokenError != nil {
+		fmt.Println(tokenError.Error())
+		return
+	}
+
+	err1 := printCVEScanProcessBar(projectId)
+
+	if err1 != nil {
+		fmt.Println(err1.Error())
+		return
+	}
+
+	var updateBean CVEStatusUpdateBean
+	updateBean.ProjectId = projectId
+	updateBean.CveId = cveId
+	updateBean.NewStatus = newStatus
+	updateBean.PackageName = packageName
+	//fmt.Printf("CVEStatusUpdateBean 对象内容：%+v\n", updateBean)
+	jsonData, err := json.Marshal(updateBean)
+	if err != nil {
+		fmt.Println("Fatal error: ", err.Error())
+		return
+	}
+	//fmt.Printf("JSON 数据: %s\n", string(jsonData))
+
+	httpURL := getServerUrl() + "/cve/process/updateCveStatus"
+	req, err := http.NewRequest(http.MethodPost, httpURL, bytes.NewBuffer(jsonData))
+	if err != nil {
+		fmt.Println("Fatal error:", err.Error())
+		return
+	}
+
+	req.Header.Set("Cookie", cookieStr)
+	req.Header.Set("content-type", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+
+	defer resp.Body.Close()
+	if resp.StatusCode == 200 {
+		content, err := io.ReadAll(resp.Body)
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
+
+		outJsonData(content)
+
+		if needFormatOut() {
+			var jaxResult AjaxResult
+			json.Unmarshal(content, &jaxResult)
+			if jaxResult.Code != 200 {
+				fmt.Println(jaxResult.Msg)
+				return
+			} else {
+				fmt.Println(jaxResult.Msg)
+			}
+		}
+	} else {
+		fmt.Println("Update the group response status:", resp.Status)
+		return
 	}
 }
 
@@ -534,6 +610,13 @@ type CVEQueryBean struct {
 	ModifiedDateBegin  string            `json:"modifiedDateBegin"`
 	ModifiedDateEnd    string            `json:"modifiedDateEnd"`
 	HasSolution        string            `json:"hasSolution"`
+}
+
+type CVEStatusUpdateBean struct {
+	ProjectId   uint64 `json:"projectId"`
+	CveId       string `json:"cveId"`
+	PackageName string `json:"packageName"`
+	NewStatus   string `json:"actionType"`
 }
 
 type CVETableDataInfo struct {
