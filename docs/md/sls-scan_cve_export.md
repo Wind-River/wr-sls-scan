@@ -15,6 +15,7 @@ sls-scan cve export [flags]
 ```
   sls-scan cve export -p <ProjectID> -c <CVE-ID>        -o "path/out/filename.xlsx"     export cve information thru. CVE-ID under one project
   sls-scan cve export -p <ProjectID> -z "<FuzzyQuery>"  -o "path/out/filename.xlsx"     export cve information thru. fuzzy query conditions under one project
+  sls-scan cve cyclonedxExport -p <ProjectID> -o "path/out/filename.json"               export CycloneDX SBOM and VEX Report
 ```
 
 ### Options

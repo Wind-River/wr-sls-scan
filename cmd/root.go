@@ -60,6 +60,7 @@ Wind River Studio Security Scanner is a professional-grade security vulnerabilit
 
 	cveExample = `  {{.appName}} cve detail -p <ProjectID> -c <CVE-ID>                                      view cve detail
   {{.appName}} cve export -p <ProjectID> -z "<FuzzyQuery>"  -o "path/outfilename.xlsx"    export cve information thru. fuzzy query conditions under one project
+  {{.appName}} cve cyclonedxExport -p <ProjectID> -o "path/out/filename.json"    	      export CycloneDX SBOM and VEX Report
   {{.appName}} cve query  -p <ProjectID> -z "<FuzzyQuery>"                                query CVE thru. fuzzy query conditions under one project
   {{.appName}} cve update -p <ProjectID> -c <cveId> -a <newStatus> -N <packageName>       Update the status of CVE.`
 

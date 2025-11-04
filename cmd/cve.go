@@ -60,7 +60,7 @@ var cveCmd = &cobra.Command{
 			subCommand = strings.ToLower(args[0])
 		}
 
-		if subCommand != "query" && subCommand != "list" && subCommand != "detail" && subCommand != "export" {
+		if subCommand != "query" && subCommand != "list" && subCommand != "detail" && subCommand != "export" && subCommand != "cyclonedxExport" {
 			fmt.Printf("Unknown subcommand: %s", subCommand)
 			return
 		}
@@ -88,6 +88,8 @@ func executeCVESubCommand(subCommand string) {
 		detailCVE(projectId, cveId)
 	} else if subCommand == "export" {
 		exportCVE(projectId)
+	} else if subCommand == "cyclonedxExport" {
+		executeCyclonedxExport(projectId)
 	} else if subCommand == "update" {
 		cveId := CVEID
 		for cveId == "" {
@@ -344,6 +346,85 @@ func exportCVE(projectId uint64) {
 		fmt.Printf("The out file is %s, file size is %v bytes.\n", outFileName, size)
 	} else {
 		fmt.Println("Export CVE response status:", resp.Status)
+	}
+}
+
+// 导出CycloneDX SBOM and VEX Report
+func executeCyclonedxExport(projectId uint64) {
+	cookieStr, tokenError := checkUserToken()
+	if tokenError != nil {
+		fmt.Println(tokenError.Error())
+		return
+	}
+
+	//检查文件格式
+	if CVEFilePath != "" {
+		if !strings.HasSuffix(CVEFilePath, ".json") && !strings.HasSuffix(CVEFilePath, ".JSON") {
+			fmt.Println("invalid file, must end with .json or .JSON")
+			return
+		}
+	}
+
+	err1 := printCVEScanProcessBar(projectId)
+	if err1 != nil {
+		fmt.Println(err1.Error())
+		return
+	}
+
+	infoProject, err := getInfoProject(projectId)
+	if err != nil {
+		fmt.Println("Fatal error:", err.Error())
+		return
+	}
+
+	var queryBean CVECyclonedxBean
+	queryBean.ProjectId = projectId
+	queryBean.SuffixType = ".JSON"
+
+	jsonData, err := json.Marshal(queryBean)
+	if err != nil {
+		fmt.Println("Fatal error:", err.Error())
+		return
+	}
+	fmt.Println("Request to export CycloneDX SBOM and VEX Report...")
+
+	httpURL := getServerUrl() + "/project/package/export"
+	req, err := http.NewRequest(http.MethodPost, httpURL, bytes.NewBuffer(jsonData))
+	if err != nil {
+		fmt.Println("Fatal error:", err.Error())
+		return
+	}
+
+	req.Header.Set("Cookie", cookieStr)
+	req.Header.Set("content-type", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println("Fatal error: HTTP request failed:", err.Error())
+		return
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode == 200 {
+		outFileName := CVEFilePath
+		if outFileName == "" {
+			outFileName = infoProject.ProjectName + "-CycloneDX.json"
+		}
+
+		outFile, err := os.Create(outFileName)
+		if err != nil {
+			panic(err)
+		}
+		defer outFile.Close()
+
+		size, err := io.Copy(outFile, resp.Body)
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Printf("The out file is %s, file size is %v bytes.\n", outFileName, size)
+	} else {
+		fmt.Println("Export CycloneDX response status:", resp.Status)
 	}
 }
 
@@ -610,6 +691,11 @@ type CVEQueryBean struct {
 	ModifiedDateBegin  string            `json:"modifiedDateBegin"`
 	ModifiedDateEnd    string            `json:"modifiedDateEnd"`
 	HasSolution        string            `json:"hasSolution"`
+}
+
+type CVECyclonedxBean struct {
+	ProjectId  uint64 `json:"projectId"`
+	SuffixType string `json:"suffixType"`
 }
 
 type CVEStatusUpdateBean struct {

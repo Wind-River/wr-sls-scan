@@ -9,8 +9,8 @@
 `Wind River Studio Security Scanner` is a professional-grade security vulnerability scanner, specifically curated to meet the unique needs of embedded systems. 
 The `sls-scan` is the command line interface of the Wind River Studio Security Scanner system.
 
-* Version: 1.1
-* Author: Zhiming Wang <zhiming.wang@windriver.com>
+* Version: 1.2
+* Author: Tian Lan <tian.lan@windriver.com>
 * Copyright © 2024 Wind River Systems, Inc.
 
 
