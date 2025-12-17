@@ -73,6 +73,9 @@ func executeProjectSubCommand(subCommand string) {
 	} else if subCommand == "create" {
 		createProject()
 		return
+	} else if subCommand == "updateSbom" {
+		updateSbom()
+		return
 	}
 
 	projectId := ProjectID
@@ -427,6 +430,147 @@ func createProject() {
 			scanProject(projectDetailResult.Data.ProjectId)
 		}
 
+	}
+}
+
+func updateSbom() {
+	//检查token情况
+	cookieStr, tokenError := checkUserToken()
+	if tokenError != nil {
+		fmt.Println(tokenError.Error())
+		return
+	}
+
+	//检查sbomFile，并上传
+	sbomFile := SBOMFile //*sbomFileFlag
+	sbomFile = strings.TrimSpace(sbomFile)
+	for sbomFile == "" {
+		fmt.Print("Please enter SBOM file path:")
+		fmt.Scanln(&sbomFile)
+	}
+
+	isExsted := false
+	var err error
+	for !isExsted {
+		isExsted, err = pathExists(sbomFile)
+		if err != nil {
+			fmt.Printf("%s is invalid file.\n", sbomFile)
+			fmt.Print("Please enter valid SBOM file path:")
+			fmt.Scanln(&sbomFile)
+			isExsted = false
+			continue
+		} else {
+			isExsted = true
+		}
+	}
+
+	_, fileName := filepath.Split(sbomFile)
+	// 打开文件
+	f, err := os.Open(sbomFile)
+	if err != nil {
+		fmt.Printf("Open the file error: " + err.Error())
+		return
+	}
+	defer f.Close()
+	// create buffer
+	var buffer bytes.Buffer
+	//Implemented multipart parsing of MIME through package multipart
+	writer := multipart.NewWriter(&buffer)
+	part, err := writer.CreateFormFile("file", fileName)
+	if err != nil {
+		panic(err)
+	}
+	// Copy the file content to the new FormFile
+	_, err = io.Copy(part, f)
+	if err != nil {
+		panic(err)
+	}
+	err = writer.Close()
+	if err != nil {
+		panic(err)
+	}
+	httpURL := getServerUrl() + "/project/upload/"
+	req, err := http.NewRequest("POST", httpURL, &buffer)
+	if err != nil {
+		panic(err)
+	}
+	req.Header.Set("Cookie", cookieStr)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println("upload error")
+		panic(err)
+	} else {
+		uploadContent, err := io.ReadAll(resp.Body)
+		if err != nil {
+			outJsonData(uploadContent)
+
+			if needFormatOut() {
+				fmt.Println(err.Error())
+			}
+			return
+		}
+
+		//查询工程详情，获取工程名信息
+		infoProject, err := getInfoProject(ProjectID)
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
+
+		var uploadResult UploadResult
+		json.Unmarshal(uploadContent, &uploadResult)
+
+		var updateProjectParam UpdateProjectParam
+		updateProjectParam.ProjectId = ProjectID
+		updateProjectParam.ManifestFile = uploadResult.Url
+		updateProjectParam.UpdateFileType = "sbom"
+		updateProjectParam.ProjectName = infoProject.ProjectName
+		//这几个填上原来的值，因为默认值是""，thor那边没处理
+		updateProjectParam.ScanSetting = infoProject.ScanSetting
+		updateProjectParam.Description = infoProject.Description
+		updateProjectParam.GroupId = infoProject.GroupId
+
+		jsonData, err := json.Marshal(updateProjectParam)
+		//fmt.Println("updateSbom jsonParam =", string(jsonData))
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
+
+		url := getServerUrl() + "/project/project"
+		req, err := http.NewRequest(http.MethodPut, url, bytes.NewBuffer(jsonData))
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
+
+		req.Header.Set("Cookie", cookieStr)
+		req.Header.Set("content-type", "application/json")
+
+		client := &http.Client{}
+		resp, err := client.Do(req)
+
+		fmt.Println("request update project SBOM ...")
+		defer resp.Body.Close()
+		if resp.StatusCode == 200 {
+			content, err := io.ReadAll(resp.Body)
+			if err != nil {
+				fmt.Println(err.Error())
+				return
+			}
+
+			outJsonData(content)
+			if needFormatOut() {
+				fmt.Println("Project '" + infoProject.ProjectName + "' updated SBOM successfully.")
+			}
+			scanProject(ProjectID)
+		} else {
+			fmt.Println("Update project response status:" + resp.Status)
+			return
+		}
 	}
 }
 
@@ -970,12 +1114,13 @@ type CreateProjectParam struct {
 }
 
 type UpdateProjectParam struct {
-	ProjectId    uint64 `json:"projectId"`
-	ProjectName  string `json:"projectName"`
-	Description  string `json:"description"`
-	GroupId      int64  `json:"groupId"`
-	ManifestFile string `json:"manifestFile"`
-	ScanSetting  string `json:"scanSetting"`
+	ProjectId      uint64 `json:"projectId"`
+	ProjectName    string `json:"projectName"`
+	Description    string `json:"description"`
+	GroupId        int64  `json:"groupId"`
+	ManifestFile   string `json:"manifestFile"`
+	ScanSetting    string `json:"scanSetting"`
+	UpdateFileType string `json:"updateFileType"`
 }
 
 type ProjectDetailResult struct {

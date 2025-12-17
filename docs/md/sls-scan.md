@@ -44,6 +44,7 @@ sls-scan is the command line interface client of the Wind River Studio Security 
   sls-scan project rescan -p <ProjectID>                                                        rescan one project 
   sls-scan project cancel -p <ProjectID>                                                        cancel scanning of the specified project
   sls-scan project export -p <ProjectID>                                                        export SBOM file under one project
+  sls-scan project updateSbom -p <ProjectID> -f "path/sbomfile"			                        update SBOM file for a project
 	
   Examples of package-related commands:
   sls-scan package query  -p <ProjectID> -n "<PakcageName>"       view details of one package thru pakcage name under one project

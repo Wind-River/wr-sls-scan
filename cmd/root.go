@@ -51,7 +51,8 @@ Wind River Studio Security Scanner is a professional-grade security vulnerabilit
   {{.appName}} project export -p <ProjectID>                                             export SBOM file under one project 
   {{.appName}} project list  
   {{.appName}} project rescan -p <ProjectID>                                             rescan one project
-  {{.appName}} project update -p <ProjectID> -n "New Project Name" -d "New Description"  update project information`
+  {{.appName}} project update -p <ProjectID> -n "New Project Name" -d "New Description"  update project information
+  {{.appName}} project updateSbom -p <ProjectID> -f "path/sbomfile"			     update SBOM file for a project`
 
 	packageExample = `  {{.appName}} package detail -p <ProjectID> -m <PakcageID>                           view all CVEs under cetain package (thru. package id) under one project
   {{.appName}} package detail -p <ProjectID> -n "<PakcageName>"                       view all CVEs under cetain package (thru. package name) under one project
