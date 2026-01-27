@@ -42,6 +42,7 @@ var (
 	packageName        string
 	Status             []string
 	Severity           []string
+	AttackVector       []string
 	ModifiedDateBegin  string
 	ModifiedDateEnd    string
 )
@@ -201,6 +202,7 @@ func queryCVE(projectId uint64) {
 	queryBean.FuzzyQuery = FuzzyQuery
 	queryBean.Status = Status
 	queryBean.Severity = Severity
+	queryBean.AttackVector = AttackVector
 	queryBean.CvssScore = cvssScore
 	queryBean.PublishedDateBegin = PublishedDateBegin
 	queryBean.PublishedDateEnd = PublishedDateEnd
@@ -295,6 +297,7 @@ func exportCVE(projectId uint64) {
 	queryBean.FuzzyQuery = FuzzyQuery
 	queryBean.Status = Status
 	queryBean.Severity = Severity
+	queryBean.AttackVector = AttackVector
 	queryBean.CvssScore = cvssScore
 	queryBean.PublishedDateBegin = PublishedDateBegin
 	queryBean.PublishedDateEnd = PublishedDateEnd
@@ -681,6 +684,7 @@ type CVEQueryBean struct {
 	ManifestId         uint64            `json:"manifestId"`
 	FuzzyQuery         string            `json:"fuzzyQuery"`
 	Severity           []string          `json:"severity"`
+	AttackVector       []string          `json:"attackVector"`
 	CvssScore          []ScoreComparator `json:"cvssScore"`
 	Status             []string          `json:"status"`
 	Packages           []string          `json:"packages"`
@@ -746,7 +750,6 @@ type InfoCVE struct {
 	FirstSaveTime             string  `json:"firstSaveTime"`
 	ConfirmFixTime            string  `json:"confirmFixTime"`
 	ResolvedTime              string  `json:"resolvedTime"`
-	AllowlistFlag             string  `json:"allowlistFlag"`
 	IgnoredFlag               string  `json:"ignoredFlag"`
 	StarFlag                  string  `json:"starFlag"`
 	Link                      string  `json:"link"`
@@ -820,7 +823,6 @@ type CVEDetailBean struct {
 	FirstSaveTime             time.Time          `json:"firstSaveTime"`
 	ConfirmFixTime            time.Time          `json:"confirmFixTime"`
 	ResolvedTime              time.Time          `json:"resolvedTime"`
-	AllowlistFlag             string             `json:"allowlistFlag"`
 	IgnoredFlag               string             `json:"ignoredFlag"`
 	StarFlag                  string             `json:"starFlag"`
 	Link                      string             `json:"link"`

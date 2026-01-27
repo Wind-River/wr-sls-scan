@@ -1087,10 +1087,10 @@ func formatOutManifestSummary(manifestSummaryStruct ManifestSummaryStruct) {
 		fmt.Println("The specified manifest file does not exist.")
 	} else {
 		fmt.Println("MANIFEST SUMMARY /")
-		fmt.Println("┌─────────────────────────┬─────────────────────────────┬───────────────────────────┬───────────────────────────┬────────────────────────────┐")
-		fmt.Printf("│            %-6d       │             %-6d          │            %-6d         │            %-6d         │             %-6d         │\n", manifestSummaryStruct.PackagesNum, manifestSummaryStruct.AllowlistedPackagesNum, manifestSummaryStruct.CvesNum, manifestSummaryStruct.AffectedCvesNum, manifestSummaryStruct.AllowlistedCVEsNum)
-		fmt.Printf("│       All Packages      │      Allowlisted Packages   │          All CVEs         │       Vulnerable CVEs     │       Allowlisted CVEs     │\n")
-		fmt.Println("└─────────────────────────┴─────────────────────────────┴───────────────────────────┴───────────────────────────┴────────────────────────────┘")
+		fmt.Println("┌─────────────────────────┬───────────────────────────┬───────────────────────────┐")
+		fmt.Printf("│            %-6d       │           %-6d          │            %-6d         │\n", manifestSummaryStruct.PackagesNum, manifestSummaryStruct.CvesNum, manifestSummaryStruct.AffectedCvesNum)
+		fmt.Printf("│       All Packages      │          All CVEs         │       Vulnerable CVEs     │\n")
+		fmt.Println("└─────────────────────────┴───────────────────────────┴───────────────────────────┘")
 	}
 }
 
@@ -1250,14 +1250,12 @@ type ManifestSummaryResult struct {
 }
 
 type ManifestSummaryStruct struct {
-	ProjectsNum            int `json:"projectsNum"`
-	PackagesNum            int `json:"packagesNum"`
-	AllowlistedPackagesNum int `json:"allowlistedPackagesNum"`
-	CvesNum                int `json:"cvesNum"`
-	AllowlistedCVEsNum     int `json:"allowlistedCVEsNum"`
-	AffectedCvesNum        int `json:"affectedCvesNum"`
-	ProhibitedLicensesNum  int `json:"prohibitedLicensesNum"`
-	CisaNum                int `json:"cisaNum"`
+	ProjectsNum           int `json:"projectsNum"`
+	PackagesNum           int `json:"packagesNum"`
+	CvesNum               int `json:"cvesNum"`
+	AffectedCvesNum       int `json:"affectedCvesNum"`
+	ProhibitedLicensesNum int `json:"prohibitedLicensesNum"`
+	CisaNum               int `json:"cisaNum"`
 }
 
 type SeverityCVEsStruct struct {

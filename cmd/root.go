@@ -129,6 +129,7 @@ var (
 	modifiedDateEnd        = pflag.StringP("modifiedDateEnd", "D", "", "Modified Date End")
 	status                 = pflag.StringArrayP("status", "u", []string{}, "Cve Status")
 	severity               = pflag.StringArrayP("severity", "v", []string{}, "Cve Severity")
+	attackVector           = pflag.StringArrayP("attackVector", "r", []string{}, "Attack Vector")
 	newStatusFlag          = pflag.StringP("newStatus", "a", "", "New Cve Status")
 	packageNameFlag        = pflag.StringP("packageName", "N", "", "PackageName")
 
@@ -189,6 +190,7 @@ func init() {
 
 	pflag.CommandLine.MarkHidden("status")
 	pflag.CommandLine.MarkHidden("severity")
+	pflag.CommandLine.MarkHidden("attackVector")
 	pflag.CommandLine.MarkHidden("modifiedDateBegin")
 	pflag.CommandLine.MarkHidden("modifiedDateEnd")
 	pflag.CommandLine.MarkHidden("scoreComparator")

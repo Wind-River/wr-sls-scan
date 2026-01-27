@@ -38,7 +38,7 @@ var CVEStatusUpdateCmd = &cobra.Command{
 func init() {
 	CVEStatusUpdateCmd.Flags().Uint64VarP(&ProjectID, "projectId", "p", 0, "Project ID")
 	CVEStatusUpdateCmd.Flags().StringVarP(&CVEID, "cveId", "c", "", "CVE ID")
-	CVEStatusUpdateCmd.Flags().StringVarP(&newStatus, "newStatus", "a", "", "New Status: [Vulnerable, Needs Review, Won't fix, Resolved, Unaffected, Allowlisted, Ignored]")
+	CVEStatusUpdateCmd.Flags().StringVarP(&newStatus, "newStatus", "a", "", "New Status: [Vulnerable, Needs Review, Won't fix, Resolved, Unaffected, Ignored]")
 	CVEStatusUpdateCmd.Flags().StringVarP(&packageName, "packageName", "N", "", "When the CVE belongs to multiple packages, it is necessary. Format: packageName packageVersion. Example:expat 2.2.6")
 
 	CVEStatusUpdateCmd.MarkFlagRequired("projectId")

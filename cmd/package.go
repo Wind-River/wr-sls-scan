@@ -489,9 +489,9 @@ func formatOutPackages(tableDataInfo PackageTableDataInfo) {
 	if tableDataInfo.Total > 0 {
 		length := len(tableDataInfo.Rows)
 		if length > 0 {
-			fmt.Println("┌────────────┬──────────────────────────┬────────────────┬──────────────┬────────────────┬────────────────┬──────────────┬─────────────────┬───────────────┐")
-			fmt.Println("│ PACKAGE ID │           PACKAGE        │ PACKAGE VERSION│ PACKAGE GROUP│     LICENSEs   │ VULNERABLE CVEs│ RESOLVED CVEs│ ALLOWLISTED CVEs│ PACKAGE STATUS│")
-			fmt.Println("├────────────┼──────────────────────────┼────────────────┼──────────────┼────────────────┼────────────────┼──────────────┼─────────────────┼───────────────┤")
+			fmt.Println("┌────────────┬──────────────────────────┬────────────────┬──────────────┬────────────────┬────────────────┬──────────────┬───────────────┐")
+			fmt.Println("│ PACKAGE ID │           PACKAGE        │ PACKAGE VERSION│ PACKAGE GROUP│     LICENSEs   │ VULNERABLE CVEs│ RESOLVED CVEs│ PACKAGE STATUS│")
+			fmt.Println("├────────────┼──────────────────────────┼────────────────┼──────────────┼────────────────┼────────────────┼──────────────┼───────────────┤")
 			var line, nameLines, versionLines, licenseLines int
 			for index, infoPackage := range tableDataInfo.Rows {
 				nameLines = getLineCount(len(infoPackage.PackageName), 25)
@@ -501,17 +501,17 @@ func formatOutPackages(tableDataInfo PackageTableDataInfo) {
 				line = max(line, licenseLines)
 				if line > 1 {
 					for i := 0; i < line; i++ {
-						fmt.Printf("│ %-11s│ %-25s│ %-15s│ %-13s│ %-15s│ %-15s│ %-13s│ %-16s│ %-14s│\n", substring(strconv.FormatUint(infoPackage.ManifestId, 10), i*11, (i+1)*11), substring(infoPackage.PackageName, i*25, (i+1)*25), substring(infoPackage.PackageVersion, i*15, (i+1)*15), substring(infoPackage.PackageGroup, i*13, (i+1)*13), substring(infoPackage.LicenseName, i*15, (i+1)*15), substring(strconv.Itoa(infoPackage.Unresolved), i*15, (i+1)*15), substring(strconv.Itoa(infoPackage.Resolved), i*13, (i+1)*13), substring(strconv.Itoa(infoPackage.Allowlistcves), i*16, (i+1)*16), substring(infoPackage.PackageStatus, i*14, (i+1)*14))
+						fmt.Printf("│ %-11s│ %-25s│ %-15s│ %-13s│ %-15s│ %-15s│ %-13s│ %-14s│\n", substring(strconv.FormatUint(infoPackage.ManifestId, 10), i*11, (i+1)*11), substring(infoPackage.PackageName, i*25, (i+1)*25), substring(infoPackage.PackageVersion, i*15, (i+1)*15), substring(infoPackage.PackageGroup, i*13, (i+1)*13), substring(infoPackage.LicenseName, i*15, (i+1)*15), substring(strconv.Itoa(infoPackage.Unresolved), i*15, (i+1)*15), substring(strconv.Itoa(infoPackage.Resolved), i*13, (i+1)*13), substring(infoPackage.PackageStatus, i*14, (i+1)*14))
 					}
 				} else {
-					fmt.Printf("│ %-11d│ %-25s│ %-15s│ %-13s│ %-15s│ %-15d│ %-13d│ %-16d│ %-14s│\n", infoPackage.ManifestId, abbreviate(infoPackage.PackageName, 25), abbreviate(infoPackage.PackageVersion, 15), abbreviate(infoPackage.PackageGroup, 13), abbreviate(infoPackage.LicenseName, 15), infoPackage.Unresolved, infoPackage.Resolved, infoPackage.Allowlistcves, infoPackage.PackageStatus)
+					fmt.Printf("│ %-11d│ %-25s│ %-15s│ %-13s│ %-15s│ %-15d│ %-13d│ %-14s│\n", infoPackage.ManifestId, abbreviate(infoPackage.PackageName, 25), abbreviate(infoPackage.PackageVersion, 15), abbreviate(infoPackage.PackageGroup, 13), abbreviate(infoPackage.LicenseName, 15), infoPackage.Unresolved, infoPackage.Resolved, infoPackage.PackageStatus)
 				}
 
 				if index < length-1 {
-					fmt.Println("├────────────┼──────────────────────────┼────────────────┼──────────────┼────────────────┼────────────────┼──────────────┼─────────────────┼───────────────┤")
+					fmt.Println("├────────────┼──────────────────────────┼────────────────┼──────────────┼────────────────┼────────────────┼──────────────┼───────────────┤")
 				} else {
 
-					fmt.Println("└────────────┴──────────────────────────┴────────────────┴──────────────┴────────────────┴────────────────┴──────────────┴─────────────────┴───────────────┘")
+					fmt.Println("└────────────┴──────────────────────────┴────────────────┴──────────────┴────────────────┴────────────────┴──────────────┴───────────────┘")
 				}
 			}
 		}
@@ -593,7 +593,6 @@ type InfoPackage struct {
 	Descript            string                 `json:"descript"`
 	Unresolved          int                    `json:"unresolved"`
 	Resolved            int                    `json:"resolved"`
-	Allowlistcves       int                    `json:"allowlistcves"`
 	UnresolvedCritical  int                    `json:"unresolvedCritical"`
 	UnresolvedHigh      int                    `json:"unresolvedHigh"`
 	UnresolvedMedium    int                    `json:"unresolvedMedium"`
