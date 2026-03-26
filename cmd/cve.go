@@ -303,6 +303,7 @@ func exportCVE(projectId uint64) {
 	queryBean.PublishedDateEnd = PublishedDateEnd
 	queryBean.ModifiedDateBegin = ModifiedDateBegin
 	queryBean.ModifiedDateEnd = ModifiedDateEnd
+	queryBean.Flag = "needDescription"
 
 	jsonData, err := json.Marshal(queryBean)
 	if err != nil {
@@ -695,6 +696,7 @@ type CVEQueryBean struct {
 	ModifiedDateBegin  string            `json:"modifiedDateBegin"`
 	ModifiedDateEnd    string            `json:"modifiedDateEnd"`
 	HasSolution        string            `json:"hasSolution"`
+	Flag               string            `json:"flag"`
 }
 
 type CVECyclonedxBean struct {
